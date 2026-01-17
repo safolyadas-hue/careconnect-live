@@ -1,0 +1,3666 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareConnect ULTRA MAX | Hub System</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      :root {
+        --bg-grad-start: #f8fafc;
+        --bg-grad-end: #e0f2fe;
+        --glass: rgba(255, 255, 255, 0.85);
+        --glass-border: rgba(255, 255, 255, 0.8);
+        --primary: #2563eb;
+        --primary-glow: rgba(37, 99, 235, 0.3);
+        --secondary: #1e40af;
+        --accent: #10b981;
+        --danger: #ef4444;
+        --blood-red: #dc2626;
+        --text-dark: #0f172a;
+        --text-muted: #64748b;
+        --panel-shadow:
+          0 10px 30px -5px rgba(0, 0, 0, 0.05),
+          0 4px 10px -2px rgba(0, 0, 0, 0.02);
+        --input-bg: rgba(248, 250, 252, 0.8);
+        --input-border: #e2e8f0;
+        --input-focus: #ffffff;
+        --sim-bg: rgba(220, 252, 231, 0.5);
+        --sim-border: #bbf7d0;
+        --vitals-bg: rgba(241, 245, 249, 0.5);
+        --vitals-border: #e2e8f0;
+        --twin-bg-1: #ffffff;
+        --twin-bg-2: #f8fafc;
+        --btn-cam-bg: rgba(255, 255, 255, 0.8);
+        --btn-cam-hover: #eff6ff;
+        --log-bg: #f8fafc;
+        --anim-speed: 0.4s;
+        --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        --bb-primary: #e11d48;
+        --bb-accent: #0ea5e9;
+        --bb-dark: #0f172a;
+        --shadow-card: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+        --font-tech: "Space Grotesk", sans-serif;
+      }
+
+      body.dark-mode {
+        --bg-grad-start: #0f172a;
+        --bg-grad-end: #020617;
+        --glass: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --primary: #60a5fa;
+        --primary-glow: rgba(96, 165, 250, 0.3);
+        --secondary: #3b82f6;
+        --accent: #4ade80;
+        --danger: #f87171;
+        --blood-red: #ef5350;
+        --text-dark: #f8fafc;
+        --text-muted: #94a3b8;
+        --panel-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        --input-bg: rgba(15, 23, 42, 0.6);
+        --input-border: #334155;
+        --input-focus: #1e293b;
+        --sim-bg: rgba(22, 101, 52, 0.15);
+        --sim-border: #166534;
+        --vitals-bg: rgba(30, 41, 59, 0.5);
+        --vitals-border: #334155;
+        --twin-bg-1: #1e293b;
+        --twin-bg-2: #0f172a;
+        --btn-cam-bg: rgba(30, 41, 59, 0.8);
+        --btn-cam-hover: #334155;
+        --log-bg: #1e293b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Outfit", sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-grad-start);
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        min-height: 100vh;
+        color: var(--text-dark);
+        transition: background 0.6s ease;
+        overflow-x: hidden;
+      }
+
+      .ambient-light {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        overflow: hidden;
+      }
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.4;
+        animation: floatOrb 10s infinite alternate ease-in-out;
+      }
+      .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: var(--primary);
+        top: -100px;
+        left: -100px;
+      }
+      .orb-2 {
+        width: 300px;
+        height: 300px;
+        background: var(--accent);
+        bottom: -50px;
+        right: -50px;
+        animation-delay: -5s;
+      }
+      @keyframes floatOrb {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(30px, 50px);
+        }
+      }
+
+      @keyframes slideUpFade {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+
+      @keyframes pulse-soft {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+      }
+
+      header {
+        background: var(--glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 0 30px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--glass-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+      }
+      .brand {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.3s var(--bounce);
+      }
+      .brand:hover {
+        transform: scale(1.02);
+      }
+      .pulse-icon {
+        color: var(--danger);
+        animation: heartbeat 2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+        filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.4));
+      }
+      @keyframes heartbeat {
+        0% {
+          transform: scale(1);
+        }
+        14% {
+          transform: scale(1.2);
+        }
+        28% {
+          transform: scale(1);
+        }
+        42% {
+          transform: scale(1.2);
+        }
+        70% {
+          transform: scale(1);
+        }
+      }
+
+      .nav-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid var(--input-border);
+        background: var(--glass);
+        color: var(--text-muted);
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s var(--bounce);
+        font-size: 0.8rem;
+      }
+      .nav-btn:hover {
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--primary-glow);
+      }
+      .nav-btn:active {
+        transform: translateY(0) scale(0.95);
+      }
+      .active-nav {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 4px 15px var(--primary-glow);
+      }
+      .blood-nav-active {
+        background: var(--blood-red) !important;
+        color: rgb(29, 3, 3) !important;
+        border-color: var(--blood-red) !important;
+        box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+      }
+
+      .patient-select {
+        padding: 8px 8px;
+        border-radius: 12px;
+        border: 2px solid var(--primary);
+        background: var(--input-bg);
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-right: 10px;
+        width: 150px;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .patient-select:hover {
+        box-shadow: 0 0 0 4px var(--primary-glow);
+      }
+
+      .view-section {
+        display: none;
+        padding: 25px;
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .active-view {
+        display: block;
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: 340px 1fr 340px;
+        gap: 24px;
+        align-items: start;
+      }
+      @media (max-width: 1200px) {
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        border-radius: 24px;
+        padding: 26px;
+        box-shadow: var(--panel-shadow);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition:
+          transform 0.4s var(--bounce),
+          box-shadow 0.4s ease;
+        position: relative;
+        margin-bottom: 24px;
+      }
+      .panel:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        border-color: rgba(255, 255, 255, 0.8);
+      }
+
+      h3 {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--text-muted);
+        margin-bottom: 18px;
+        font-weight: 800;
+        border-bottom: 2px solid var(--glass-border);
+        padding-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .input-group {
+        margin-bottom: 12px;
+      }
+      label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+      }
+      input,
+      select,
+      datalist {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid var(--input-border);
+        border-radius: 12px;
+        background: var(--input-bg);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        outline: none;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--primary);
+        background: var(--input-focus);
+        box-shadow: 0 0 0 4px var(--primary-glow);
+        transform: translateY(-1px);
+      }
+
+      .btn-cam {
+        width: 100%;
+        padding: 14px;
+        background: var(--btn-cam-bg);
+        border: 2px dashed var(--primary);
+        color: var(--primary);
+        border-radius: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s var(--bounce);
+      }
+      .btn-cam:hover {
+        background: var(--btn-cam-hover);
+        transform: scale(1.02);
+      }
+
+      .vitals-container {
+        background: var(--vitals-bg);
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--vitals-border);
+        margin-bottom: 18px;
+      }
+      .vitals-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      .vital-item {
+        text-align: center;
+      }
+      .vital-item label {
+        font-size: 0.65rem;
+        color: var(--accent);
+        margin-bottom: 6px;
+        display: block;
+      }
+      .vital-item input {
+        text-align: center;
+        padding: 8px;
+        font-size: 1rem;
+        color: var(--primary);
+        border: none;
+        background: var(--input-focus);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        border-radius: 8px;
+      }
+
+      .btn-gen {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 10px 20px var(--primary-glow);
+        transition: all 0.3s var(--bounce);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 1rem;
+        margin-top: auto;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-gen:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 15px 30px var(--primary-glow);
+      }
+      .btn-gen:active {
+        transform: translateY(-1px);
+      }
+
+      .twin-wrapper {
+        flex-grow: 1;
+        position: relative;
+        background: radial-gradient(
+          circle at center,
+          var(--twin-bg-1) 0%,
+          var(--twin-bg-2) 100%
+        );
+        border-radius: 20px;
+        border: 1px solid var(--input-border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 20px;
+        min-height: 320px;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.02);
+      }
+
+      .holo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+        z-index: 2;
+        transition: 0.5s;
+        animation: float 6s ease-in-out infinite;
+      }
+      body.dark-mode .holo-img {
+        opacity: 0.85;
+      }
+      .holo-active {
+        filter: sepia(100%) hue-rotate(190deg) saturate(150%) brightness(1.1)
+          drop-shadow(0 0 30px #06b6d4);
+      }
+
+      .live-graph {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        background: var(--glass);
+        backdrop-filter: blur(4px);
+        border-top: 1px solid var(--glass-border);
+        z-index: 5;
+      }
+
+      .floating-info {
+        position: absolute;
+        top: 20px;
+        background: var(--input-focus);
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        display: none;
+        z-index: 10;
+        animation: slideUpFade 0.4s ease;
+      }
+
+      .id-card {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 12;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        padding: 10px 14px;
+        border-radius: 10px;
+        border-left: 4px solid var(--primary);
+        display: none;
+        text-align: left;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        animation: slideUpFade 0.5s ease;
+      }
+      body.dark-mode .id-card {
+        background: rgba(30, 41, 59, 0.9);
+      }
+      .id-num {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        display: block;
+      }
+      .id-name {
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        font-weight: 700;
+        display: block;
+      }
+
+      .risk-container {
+        width: 100%;
+        margin-top: 15px;
+        display: grid;
+        gap: 8px;
+      }
+      .risk-row {
+        display: flex;
+        align-items: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+      }
+      .risk-label {
+        width: 60px;
+        text-align: right;
+        margin-right: 10px;
+      }
+      .risk-track {
+        flex-grow: 1;
+        height: 8px;
+        background: var(--input-border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .risk-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .risk-red {
+        background: var(--danger);
+      }
+      .risk-blue {
+        background: var(--primary);
+      }
+      .risk-green {
+        background: var(--accent);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .stat-card {
+        background: var(--input-focus);
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid var(--input-border);
+        text-align: center;
+        transition: transform 0.3s;
+      }
+      .stat-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+      }
+      .stat-val {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        display: block;
+      }
+      .stat-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
+
+      .sim-box {
+        background: var(--sim-bg);
+        padding: 20px;
+        border-radius: 18px;
+        margin-bottom: 20px;
+        border: 1px solid var(--sim-border);
+        transition: 0.3s;
+      }
+      .sim-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .sim-btn {
+        background: var(--input-focus);
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 800;
+        color: var(--accent);
+        cursor: pointer;
+        transition: all 0.3s var(--bounce);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+      }
+      .sim-btn:hover {
+        background: var(--input-bg);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+      }
+      .sim-btn:active {
+        transform: scale(0.96);
+      }
+
+      .doc-panel {
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        padding: 16px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        display: none;
+        animation: slideUpFade 0.5s ease;
+      }
+      body.dark-mode .doc-panel {
+        background: rgba(245, 158, 11, 0.15);
+        border-color: #d97706;
+      }
+      .doc-title {
+        font-size: 0.75rem;
+        color: #b45309;
+        font-weight: 800;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+      .doc-text {
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        line-height: 1.5;
+      }
+
+      .log-list {
+        flex-grow: 1;
+        overflow-y: auto;
+        background: var(--log-bg);
+        border-radius: 14px;
+        padding: 14px;
+        border: 1px solid var(--input-border);
+        font-family: "Courier New", monospace;
+        font-size: 0.75rem;
+        color: var(--text-dark);
+        max-height: 400px;
+        scroll-behavior: smooth;
+      }
+      .log-item {
+        margin-bottom: 8px;
+        border-bottom: 1px dashed var(--text-muted);
+        padding-bottom: 8px;
+        animation: slideUpFade 0.3s ease;
+      }
+
+      .home-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        max-width: 1200px;
+        margin: 50px auto;
+      }
+
+      @media (max-width: 900px) {
+        .home-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .home-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 40px 32px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: var(--panel-shadow);
+        overflow: hidden;
+        position: relative;
+        opacity: 0;
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        transform-style: preserve-3d;
+        transition: border-color 0.3s ease;
+      }
+
+      .home-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          600px circle at var(--mouse-x) var(--mouse-y),
+          var(--primary-glow),
+          transparent 40%
+        );
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.5s;
+        pointer-events: none;
+      }
+      .home-card:hover::before {
+        opacity: 1;
+      }
+      .home-card:hover {
+        border-color: var(--primary);
+      }
+
+      .home-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .home-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .home-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      .home-icon {
+        font-size: 3.5rem;
+        color: var(--primary);
+        margin-bottom: 24px;
+        transition: transform 0.4s var(--bounce);
+        transform: translateZ(25px);
+        z-index: 2;
+      }
+      .home-card:hover .home-icon {
+        transform: translateZ(35px) scale(1.1) rotate(5deg);
+      }
+
+      .home-title {
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+        color: var(--text-dark);
+        transform: translateZ(25px);
+        position: relative;
+        z-index: 2;
+      }
+
+      .home-desc {
+        color: var(--text-muted);
+        line-height: 1.6;
+        font-size: 1rem;
+        transform: translateZ(25px);
+        position: relative;
+        z-index: 2;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .stat-box {
+        background: var(--glass);
+        padding: 24px;
+        border-radius: 18px;
+        border: 1px solid var(--glass-border);
+        transition: 0.3s;
+      }
+      .stat-box:hover {
+        transform: translateY(-3px);
+      }
+      .stat-num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--primary);
+      }
+      .stat-txt {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
+
+      .archive-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .archive-table th {
+        text-align: left;
+        padding: 18px;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        border-bottom: 2px solid var(--glass-border);
+        text-transform: uppercase;
+      }
+      .archive-table td {
+        padding: 18px;
+        border-bottom: 1px solid var(--glass-border);
+        font-size: 0.9rem;
+        transition: 0.2s;
+      }
+      .archive-table tr:hover td {
+        background: var(--input-focus);
+      }
+      .tag {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+      }
+      .tag-common {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .tag-rare {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(8px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s;
+      }
+      .modal-content {
+        background: var(--input-focus);
+        padding: 30px;
+        border-radius: 28px;
+        width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        border: 2px solid var(--primary);
+        text-align: center;
+        color: var(--text-dark);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .search-box {
+        width: 100%;
+        padding: 14px;
+        border: 2px solid var(--input-border);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        font-size: 1rem;
+        background: var(--input-bg);
+        color: var(--text-dark);
+      }
+      .data-list {
+        overflow-y: auto;
+        text-align: left;
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        max-height: 400px;
+        margin-bottom: 10px;
+      }
+      .data-item {
+        padding: 14px;
+        border-bottom: 1px solid var(--input-border);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.2s;
+      }
+      .data-item:hover {
+        background: var(--input-bg);
+        color: var(--primary);
+        padding-left: 18px;
+      }
+      .data-item span {
+        font-size: 0.7rem;
+        background: var(--input-bg);
+        padding: 2px 8px;
+        border-radius: 6px;
+        color: var(--text-muted);
+      }
+      .rec-tag {
+        background: var(--sim-bg) !important;
+        color: var(--accent) !important;
+        font-weight: bold;
+      }
+
+      video {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 20px;
+        transform: scaleX(-1);
+        border: 2px solid var(--input-border);
+        background: black;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      }
+      @keyframes scan {
+        0% {
+          top: 0%;
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          top: 100%;
+          opacity: 0;
+        }
+      }
+      .emergency-mode {
+        animation: flashRed 1s infinite;
+        border-color: var(--danger) !important;
+      }
+      @keyframes flashRed {
+        0%,
+        100% {
+          background: var(--glass);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+        50% {
+          background: rgba(239, 68, 68, 0.15);
+          box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--text-muted);
+        border-radius: 4px;
+        opacity: 0.3;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        opacity: 0.6;
+      }
+
+      #toast-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--input-focus);
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateX(100px);
+        opacity: 0;
+        transition: all 0.5s var(--bounce);
+        border-left: 4px solid var(--bb-primary);
+        pointer-events: auto;
+        min-width: 300px;
+      }
+      .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .toast i {
+        font-size: 1.2rem;
+      }
+      .toast.success {
+        border-color: #10b981;
+      }
+      .toast.success i {
+        color: #10b981;
+      }
+      .toast.error {
+        border-color: #ef4444;
+      }
+      .toast.error i {
+        color: #ef4444;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        border-radius: 30px;
+        padding: 60px;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 40px -10px rgba(255, 75, 43, 0.4);
+        margin-bottom: 40px;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 2.24 5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.6;
+      }
+
+      .hero h1 {
+        font-family: var(--font-tech);
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+      .hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+        font-weight: 300;
+      }
+
+      .hero-controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        position: relative;
+        z-index: 2;
+      }
+      .hero-btn {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 12px 25px;
+        border-radius: 50px;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .hero-btn:hover {
+        background: white;
+        color: var(--bb-primary);
+        transform: translateY(-2px);
+      }
+      .hero-btn.sos {
+        background: white;
+        color: var(--bb-primary);
+        font-weight: 800;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        }
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+      }
+
+      .card {
+        background: var(--glass);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: var(--shadow-card);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        transition: 0.4s var(--bounce);
+        position: relative;
+      }
+      .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.1);
+        border-color: var(--bb-accent);
+      }
+
+      .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+      .bg-blue {
+        background: #eff6ff;
+        color: #3b82f6;
+      }
+      .bg-red {
+        background: #fef2f2;
+        color: #ef4444;
+      }
+      .bg-green {
+        background: #f0fdf4;
+        color: #10b981;
+      }
+
+      .card h3 {
+        font-family: var(--font-tech);
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+      }
+      .card p {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+      .input-row {
+        display: flex;
+        gap: 10px;
+      }
+      #view-blood input,
+      #view-blood select {
+        width: 100%;
+        padding: 14px 18px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        color: var(--bb-dark);
+        outline: none;
+        transition: 0.3s;
+      }
+      #view-blood input:focus,
+      #view-blood select:focus {
+        border-color: var(--bb-accent);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+      }
+
+      .btn-action {
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .btn-primary {
+        background: var(--bb-dark);
+        color: white;
+      }
+      .btn-primary:hover {
+        background: black;
+        transform: translateY(-2px);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--bb-primary);
+        color: var(--bb-primary);
+      }
+      .btn-outline:hover {
+        background: var(--bb-primary);
+        color: white;
+      }
+      .btn-gradient {
+        background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        color: white;
+        box-shadow: 0 8px 20px rgba(255, 65, 108, 0.3);
+      }
+      .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(255, 65, 108, 0.4);
+      }
+
+      .result-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        border-bottom: 1px solid #f1f5f9;
+        animation: slideIn 0.3s ease forwards;
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .result-item:last-child {
+        border-bottom: none;
+      }
+      .tag {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .tag.group {
+        background: #fee2e2;
+        color: #ef4444;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 900;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .overlay.active {
+        display: flex;
+        opacity: 1;
+      }
+
+      .modal-box {
+        background: white;
+        padding: 30px;
+        border-radius: 24px;
+        width: 90%;
+        max-width: 1000px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .overlay.active .modal-box {
+        transform: scale(1);
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #f1f5f9;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #64748b;
+        transition: 0.2s;
+      }
+      .close-btn:hover {
+        background: #e2e8f0;
+        color: var(--bb-dark);
+      }
+
+      .chart-card {
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        border-radius: 16px;
+        background: white;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .sos-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .sos-btn {
+        padding: 15px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 700;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 1rem;
+        transition: 0.2s;
+      }
+      .sos-btn:hover {
+        transform: scale(1.02);
+      }
+
+      @media (max-width: 1024px) {
+        .dashboard {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .panel:nth-child(1) {
+          order: 2;
+        }
+        .panel:nth-child(2) {
+          order: 1;
+        }
+        .panel:nth-child(3) {
+          order: 3;
+        }
+
+        .home-grid {
+          grid-template-columns: repeat(2, 1fr);
+          padding: 0 20px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        header {
+          height: auto;
+          flex-direction: column;
+          padding: 15px;
+          gap: 15px;
+        }
+
+        header > div {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          width: 100%;
+          gap: 8px;
+        }
+
+        .patient-select {
+          width: 100%;
+          margin-right: 0;
+          margin-bottom: 5px;
+        }
+
+        .nav-btn {
+          flex-grow: 1;
+          text-align: center;
+          font-size: 0.75rem;
+          padding: 8px 10px;
+        }
+
+        .twin-wrapper {
+          min-height: 280px;
+        }
+
+        .live-graph {
+          width: 100% !important;
+        }
+
+        .stats-grid {
+          gap: 5px;
+        }
+        .stat-val {
+          font-size: 1.2rem;
+        }
+
+        .home-grid {
+          grid-template-columns: 1fr;
+          margin: 20px auto;
+        }
+
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        .hero-controls {
+          flex-direction: column;
+        }
+
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .chart-card > div {
+          grid-template-columns: 1fr !important;
+        }
+
+        .modal-content,
+        .modal-box {
+          width: 95%;
+          margin: 10px;
+          padding: 20px;
+          max-height: 85vh;
+        }
+
+        .vitals-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 5px;
+        }
+        .vital-item input {
+          padding: 5px;
+          font-size: 0.9rem;
+        }
+
+        .stats-row {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="auth-overlay"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg-grad-start);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      "
+    >
+      <div
+        class="panel"
+        style="
+          max-width: 400px;
+          width: 100%;
+          text-align: center;
+          padding: 40px;
+          border-color: var(--primary);
+        "
+      >
+        <h1
+          style="
+            color: var(--primary);
+            font-family: var(--font-tech);
+            margin-bottom: 10px;
+          "
+        >
+          CareConnect
+        </h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px">
+          Secure Access Portal
+        </p>
+
+        <div
+          style="
+            background: var(--input-bg);
+            padding: 5px;
+            border-radius: 30px;
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid var(--input-border);
+          "
+        >
+          <button
+            id="btn-role-hospital"
+            onclick="setRole('hospital')"
+            style="
+              flex: 1;
+              padding: 10px;
+              border-radius: 25px;
+              border: none;
+              background: var(--primary);
+              color: white;
+              font-weight: bold;
+              cursor: pointer;
+              transition: 0.3s;
+            "
+          >
+            <i class="fa-solid fa-hospital"></i> Hospital
+          </button>
+          <button
+            id="btn-role-person"
+            onclick="setRole('person')"
+            style="
+              flex: 1;
+              padding: 10px;
+              border-radius: 25px;
+              border: none;
+              background: transparent;
+              color: var(--text-muted);
+              font-weight: bold;
+              cursor: pointer;
+              transition: 0.3s;
+            "
+          >
+            <i class="fa-solid fa-user"></i> Person
+          </button>
+        </div>
+
+        <form id="authForm" onsubmit="handleAuth(event)">
+          <div class="input-group">
+            <input
+              type="email"
+              id="authEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="input-group" style="position: relative">
+            <input
+              type="password"
+              id="authPass"
+              placeholder="Password"
+              required
+              style="padding-right: 40px"
+            />
+            <i
+              class="fa-solid fa-eye"
+              id="eyeIcon"
+              onclick="togglePassVisibility()"
+              style="
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: var(--text-muted);
+              "
+            ></i>
+          </div>
+
+          <button type="submit" class="btn-gen" id="authBtn">LOGIN</button>
+        </form>
+
+        <p
+          style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted)"
+        >
+          <span id="authSwitchText">New here?</span>
+          <a
+            href="#"
+            onclick="toggleAuthMode()"
+            style="color: var(--primary); font-weight: bold"
+          >
+            <span id="authActionText">Create Account</span>
+          </a>
+        </p>
+        <div
+          id="authError"
+          style="
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: none;
+          "
+        ></div>
+      </div>
+    </div>
+    <div class="ambient-light">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div class="modal" id="dataModal">
+      <div class="modal-content">
+        <h3
+          id="modalTitle"
+          style="
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+          "
+        >
+          SELECT PROTOCOL
+        </h3>
+        <input
+          type="text"
+          id="modalSearch"
+          class="search-box"
+          placeholder="Search..."
+          onkeyup="filterData()"
+        />
+        <div id="modalList" class="data-list"></div>
+        <button
+          onclick="closeDataModal()"
+          style="
+            margin-top: 15px;
+            padding: 12px;
+            border: none;
+            background: var(--input-border);
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-dark);
+          "
+        >
+          CLOSE
+        </button>
+      </div>
+    </div>
+
+    <div class="modal" id="cameraModal">
+      <div class="modal-content">
+        <h3 style="color: var(--text-dark); margin-bottom: 10px">
+          BIO-SCANNER
+        </h3>
+        <video id="webcam" autoplay playsinline></video>
+        <div
+          style="
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+          "
+        >
+          <button
+            onclick="closeCamera()"
+            style="
+              padding: 10px 20px;
+              border-radius: 20px;
+              border: none;
+              background: var(--input-border);
+              font-weight: 700;
+              cursor: pointer;
+            "
+          >
+            CANCEL
+          </button>
+          <button
+            onclick="capturePhoto()"
+            style="
+              padding: 10px 20px;
+              border-radius: 20px;
+              border: none;
+              background: var(--primary);
+              color: white;
+              font-weight: 700;
+              cursor: pointer;
+            "
+          >
+            CAPTURE
+          </button>
+        </div>
+        <canvas id="camCanvas" style="display: none"></canvas>
+      </div>
+    </div>
+
+    <div id="dashboardOverlay" class="overlay">
+      <div class="modal-box">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+          "
+        >
+          <div>
+            <h2 style="font-family: var(--font-tech); margin: 0">
+              Live Blood Command
+            </h2>
+            <p style="color: #64748b; font-size: 0.9rem">
+              Real-time inventory & predictive analytics.
+            </p>
+          </div>
+          <button
+            class="close-btn"
+            style="position: static"
+            onclick="closeDashboard()"
+          >
+            ×
+          </button>
+        </div>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 35% 63%;
+            gap: 20px;
+            margin-bottom: 20px;
+          "
+        >
+          <div
+            class="chart-card"
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              position: relative;
+            "
+          >
+            <h4
+              style="
+                width: 100%;
+                text-align: left;
+                color: #64748b;
+                margin-bottom: 10px;
+              "
+            >
+              Distribution
+            </h4>
+            <div style="position: relative; width: 220px; height: 220px">
+              <canvas id="circleChart"></canvas>
+              <div
+                style="
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  text-align: center;
+                "
+              >
+                <span
+                  id="totalUnits"
+                  style="
+                    font-size: 2.5rem;
+                    font-weight: 800;
+                    color: var(--bb-dark);
+                    line-height: 1;
+                  "
+                  >0</span
+                >
+                <small style="display: block; color: #94a3b8; font-weight: 600"
+                  >UNITS</small
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+              "
+            >
+              <h4 style="color: #64748b">Stock Levels</h4>
+              <span
+                style="
+                  font-size: 0.75rem;
+                  background: #fee2e2;
+                  color: #ef4444;
+                  padding: 2px 8px;
+                  border-radius: 4px;
+                  font-weight: bold;
+                "
+              >
+                <i class="fa-solid fa-triangle-exclamation"></i> RED = CRITICAL
+                (< 5)
+              </span>
+            </div>
+            <div style="height: 220px; width: 100%">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card" style="margin-bottom: 20px">
+          <h4 style="color: #64748b; margin-bottom: 10px">
+            6-Month Donation Forecast
+          </h4>
+          <div style="height: 150px; width: 100%">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+
+        <div
+          style="
+            background: var(--input-bg);
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 10px; flex: 1">
+            <div
+              style="
+                background: var(--bb-dark);
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <div>
+              <strong>Quick Update</strong>
+              <div style="font-size: 0.8rem; color: #1e01c4">
+                Manually adjust stock counts
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center">
+            <select
+              id="updateGroup"
+              style="width: 100px; padding: 10px; border-radius: 8px"
+            >
+              <option value="A+">A+</option>
+              <option value="B+">B+</option>
+              <option value="O+">O+</option>
+              <option value="AB+">AB+</option>
+              <option value="A-">A-</option>
+              <option value="B-">B-</option>
+              <option value="O-">O-</option>
+              <option value="AB-">AB-</option>
+            </select>
+            <input
+              type="number"
+              id="updateAmount"
+              placeholder="+ / -"
+              style="width: 80px; padding: 10px; border-radius: 8px; margin: 0"
+            />
+            <button
+              class="btn-action btn-primary"
+              style="width: auto; padding: 10px 20px; border-radius: 8px"
+              onclick="addStock()"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sosOverlay" class="overlay">
+      <div class="modal-box" style="max-width: 400px; text-align: center">
+        <button class="close-btn" onclick="toggleSOS(false)">×</button>
+        <i
+          class="fa-solid fa-triangle-exclamation"
+          style="font-size: 3rem; color: #ef4444; margin-bottom: 15px"
+        ></i>
+        <h2 style="color: #ef4444">EMERGENCY SOS</h2>
+        <p>This will alert nearby donors and services.</p>
+        <div class="sos-options">
+          <a href="tel:102" class="sos-btn" style="background: #ef4444"
+            ><i class="fa-solid fa-ambulance"></i> Call Ambulance</a
+          >
+          <a href="tel:100" class="sos-btn" style="background: #3b82f6"
+            ><i class="fa-solid fa-shield-halved"></i> Call Police</a
+          >
+          <button
+            onclick="broadcastLoc()"
+            class="sos-btn"
+            style="background: #10b981"
+          >
+            <i class="fa-brands fa-whatsapp"></i> Broadcast Location
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <header>
+      <div class="brand" onclick="switchView('home')">
+        <i class="fa-solid fa-heart-pulse pulse-icon"></i> CareConnect
+        <span style="font-weight: 300">HUB</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center">
+        <select
+          id="patientSwitcher"
+          class="patient-select"
+          onchange="switchPatient()"
+        >
+          <option value="-1">No Active Patients</option>
+        </select>
+
+        <button class="nav-btn" onclick="switchView('entry')">
+          <i class="fa-solid fa-plus"></i> NEW ADMISSION
+        </button>
+        <button class="nav-btn" onclick="switchView('archive')">
+          <i class="fa-solid fa-chart-line"></i> ARCHIVES
+        </button>
+        <button
+          class="nav-btn"
+          onclick="switchView('blood')"
+          style="border-color: var(--blood-red); color: var(--blood-red)"
+        >
+          <i class="fa-solid fa-droplet"></i> BLOOD BANK
+        </button>
+
+        <button class="nav-btn" onclick="toggleTheme()">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button
+          id="deleteBtn"
+          class="nav-btn"
+          onclick="deleteAccount()"
+          title="Delete Account"
+          style="background: #330c0c; border-color: #7f1d1d; color: #f87171"
+        >
+          <i class="fa-solid fa-user-xmark"></i>
+        </button>
+        <button
+          class="nav-btn"
+          onclick="logout()"
+          style="border-color: var(--danger); color: var(--danger)"
+        >
+          <i class="fa-solid fa-power-off"></i>
+        </button>
+        <div
+          style="
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-left: 10px;
+          "
+        >
+          <span id="systemStatus"><i class="fa-solid fa-server"></i> IDLE</span>
+          | <span id="clock">00:00:00</span>
+        </div>
+      </div>
+    </header>
+
+    <div id="view-home" class="view-section active-view">
+      <div style="text-align: center; margin-top: 50px">
+        <h1 style="font-size: 3rem; margin-bottom: 10px">
+          Medical Intelligence System
+        </h1>
+        <p style="color: var(--text-muted)">Select a module to begin.</p>
+      </div>
+
+      <div class="home-grid">
+        <div class="home-card" onclick="switchView('entry')">
+          <div class="home-icon"><i class="fa-solid fa-hospital-user"></i></div>
+          <div class="home-title">Patient Admission</div>
+          <div class="home-desc">
+            Initialize Digital Twin simulation for new patients. Input vitals,
+            scan biometrics, and test treatment protocols.
+          </div>
+        </div>
+        <div class="home-card" onclick="switchView('archive')">
+          <div class="home-icon"><i class="fa-solid fa-user-doctor"></i></div>
+          <div class="home-title">Doctor's Archives</div>
+          <div class="home-desc">
+            Access historical data. Verify past cases, analyze common vs.
+            uncommon disease patterns for educational purposes.
+          </div>
+        </div>
+        <div
+          class="home-card"
+          onclick="switchView('blood')"
+          style="border-color: var(--blood-red)"
+        >
+          <div class="home-icon" style="color: var(--blood-red)">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <div class="home-title">Blood Donation</div>
+          <div class="home-desc">
+            Real-time donor network. Find matching blood groups nearby or
+            register as a donor to save lives in emergencies.
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          text-align: center;
+          padding: 20px;
+          color: var(--text-muted);
+          font-size: 0.9rem;
+          font-weight: 600;
+          opacity: 0.7;
+        "
+      >
+        Made by team Praggya
+      </div>
+    </div>
+
+    <div id="view-entry" class="view-section">
+      <div class="dashboard">
+        <div class="panel">
+          <h3><i class="fa-solid fa-user"></i> Patient Data</h3>
+          <div class="input-group">
+            <label>PATIENT NAME</label>
+            <input type="text" id="pName" placeholder="Enter Full Name" />
+          </div>
+          <div class="input-group">
+            <label style="color: var(--danger)">PRIMARY CONDITION</label>
+            <input
+              type="text"
+              id="pCondition"
+              list="conditionList"
+              placeholder="Select Disease to Simulate..."
+            />
+            <datalist id="conditionList">
+              <option value="Stable (Healthy)"></option>
+              <option value="Heart Attack (Critical)"></option>
+              <option value="Diabetes (Chronic)"></option>
+              <option value="Hypotension (Low BP)"></option>
+              <option value="Asthma Attack"></option>
+            </datalist>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+              margin-bottom: 10px;
+            "
+          >
+            <div class="input-group">
+              <label>AGE</label><input type="number" id="pAge" value="45" />
+            </div>
+            <div class="input-group">
+              <label>GENDER</label
+              ><select id="pGender">
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-cam" onclick="startCamera()">
+            <i class="fa-solid fa-camera"></i> SCAN FACE / UPLOAD
+          </button>
+          <div class="vitals-container">
+            <div class="vitals-grid">
+              <div class="vital-item">
+                <label>BP (Sys)</label
+                ><input type="number" id="vBP" value="120" />
+              </div>
+              <div class="vital-item">
+                <label>HR (BPM)</label
+                ><input type="number" id="vHR" value="72" />
+              </div>
+              <div class="vital-item">
+                <label>SpO2 (%)</label
+                ><input type="number" id="vSpO2" value="98" />
+              </div>
+            </div>
+            <div class="vitals-grid" style="margin-top: 8px">
+              <div class="vital-item">
+                <label>W (kg)</label
+                ><input type="number" id="vWeight" value="75" />
+              </div>
+              <div class="vital-item">
+                <label>H (cm)</label
+                ><input type="number" id="vHeight" value="175" />
+              </div>
+              <div class="vital-item">
+                <label>Sugar</label
+                ><input type="number" id="vSug" value="100" />
+              </div>
+            </div>
+          </div>
+          <button class="btn-gen" onclick="startSimulation()">
+            <i class="fa-solid fa-dna"></i> INITIALIZE TWIN ENGINE
+          </button>
+        </div>
+
+        <div class="panel" id="twinPanel">
+          <h3>
+            <span><i class="fa-solid fa-vr-cardboard"></i> LIVE TWIN</span>
+            <span
+              id="statusBadge"
+              style="
+                font-size: 0.7rem;
+                background: var(--input-border);
+                color: var(--text-muted);
+                padding: 4px 8px;
+                border-radius: 4px;
+              "
+              >OFFLINE</span
+            >
+          </h3>
+          <div class="twin-wrapper">
+            <div class="id-card" id="patientIDCard">
+              <span class="id-num" id="cardID">ID: --</span>
+              <span class="id-name" id="cardName">--</span>
+            </div>
+
+            <div class="floating-info" id="bmiDisplay" style="right: 15px">
+              BMI: --
+            </div>
+            <div class="floating-info" id="roomDisplay" style="left: 15px">
+              ROOM: --
+            </div>
+            <div
+              class="floating-info"
+              id="diseaseDisplay"
+              style="top: 45px; right: 15px; color: var(--danger)"
+            >
+              --
+            </div>
+            <div
+              id="scanLine"
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background: #06b6d4;
+                box-shadow: 0 0 15px #06b6d4;
+                display: none;
+                z-index: 10;
+                animation: scan 2s infinite linear;
+              "
+            ></div>
+            <img
+              id="twinImg"
+              src="https://cdn.pixabay.com/photo/2024/02/26/19/39/monochrome-8598798_1280.png"
+              class="holo-img"
+            />
+            <canvas id="heartGraph" class="live-graph"></canvas>
+          </div>
+
+          <div class="risk-container" id="riskChartArea" style="display: none">
+            <div class="risk-row">
+              <div class="risk-label">CARDIAC</div>
+              <div class="risk-track">
+                <div id="barCard" class="risk-bar risk-red"></div>
+              </div>
+            </div>
+            <div class="risk-row">
+              <div class="risk-label">NEURAL</div>
+              <div class="risk-track">
+                <div id="barNeur" class="risk-bar risk-blue"></div>
+              </div>
+            </div>
+            <div class="risk-row">
+              <div class="risk-label">IMMUNE</div>
+              <div class="risk-track">
+                <div id="barImm" class="risk-bar risk-green"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid" style="margin-top: 10px">
+            <div class="stat-card">
+              <span class="stat-val" id="dispBP">--</span
+              ><span class="stat-label">BP SYS</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-val" id="dispHR">--</span
+              ><span class="stat-label">HEART RATE</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-val" id="dispHlth">--</span
+              ><span class="stat-label">OVERALL HEALTH</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><i class="fa-solid fa-notes-medical"></i> Treatments</h3>
+
+          <div class="doc-panel" id="docPanel">
+            <div class="doc-title">
+              <i class="fa-solid fa-user-doctor"></i> Clinical Recommendation
+            </div>
+            <div class="doc-text" id="docText">--</div>
+          </div>
+
+          <div class="sim-box">
+            <div
+              style="
+                font-size: 0.7rem;
+                color: var(--accent);
+                font-weight: 800;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+              "
+            >
+              Intervention Panel
+            </div>
+            <div class="sim-grid">
+              <button class="sim-btn" onclick="openDataModal('meds')">
+                <i class="fa-solid fa-pills"></i> MEDS
+              </button>
+              <button class="sim-btn" onclick="openDataModal('surg')">
+                <i class="fa-solid fa-scalpel"></i> SURGERY
+              </button>
+              <button class="sim-btn" onclick="applyTreatment('CPR')">
+                <i class="fa-solid fa-hands-holding-circle"></i> CPR
+              </button>
+              <button class="sim-btn" onclick="applyTreatment('OXYGEN')">
+                <i class="fa-solid fa-mask-ventilator"></i> O2 MASK
+              </button>
+              <button class="sim-btn" onclick="applyTreatment('INSULIN')">
+                <i class="fa-solid fa-syringe"></i> INSULIN
+              </button>
+              <button class="sim-btn" onclick="applyTreatment('ADRENALINE')">
+                <i class="fa-solid fa-bolt"></i> ADRENALINE
+              </button>
+            </div>
+          </div>
+
+          <button
+            class="sim-btn"
+            style="
+              width: 100%;
+              margin-bottom: 15px;
+              background: var(--primary);
+              color: white;
+            "
+            onclick="archiveCurrentCase()"
+          >
+            <i class="fa-solid fa-floppy-disk"></i> SAVE CASE TO ARCHIVE
+          </button>
+
+          <h3><i class="fa-solid fa-clipboard-list"></i> Clinical Log</h3>
+          <div class="log-list" id="simLog">
+            <div class="log-item">
+              Twin Engine Idle. Enter data and click Initialize.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-archive" class="view-section">
+      <h2 style="margin-bottom: 20px">Medical Records & Analytics</h2>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-txt">Total Patients</div>
+        </div>
+        <div class="stat-box">
+          <div
+            class="stat-num"
+            id="statCommon"
+            style="font-size: 1.2rem; line-height: 1.2"
+          >
+            --
+          </div>
+          <div class="stat-txt">Most Common</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="statStable" style="color: var(--accent)">
+            0%
+          </div>
+          <div class="stat-txt">Survival Rate</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="statRare" style="color: var(--danger)">
+            0
+          </div>
+          <div class="stat-txt">Rare Cases</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+          "
+        >
+          <h3><i class="fa-solid fa-table"></i> Patient Registry</h3>
+          <input
+            type="text"
+            placeholder="Search records..."
+            onkeyup="searchTable()"
+            id="searchBox"
+            style="width: 200px; padding: 8px"
+          />
+        </div>
+        <div style="overflow-x: auto; width: 100%">
+          <table
+            class="archive-table"
+            id="recordTable"
+            style="min-width: 600px"
+          >
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Patient Name</th>
+                <th>Condition</th>
+                <th>Pattern Analysis</th>
+                <th>Final Outcome</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-blood" class="view-section">
+      <div
+        class="container"
+        style="max-width: 1200px; margin: 0 auto; padding: 0 20px"
+      >
+        <div class="hero">
+          <h1>Save a Life in 3 Clicks</h1>
+          <p>Real-time connection between donors, patients, and hospitals.</p>
+          <div class="hero-controls">
+            <button
+              class="hero-btn"
+              onclick="
+                document
+                  .getElementById('search-card')
+                  .scrollIntoView({ behavior: 'smooth' })
+              "
+            >
+              <i class="fa-solid fa-magnifying-glass"></i> Find Donor
+            </button>
+            <button
+              class="hero-btn"
+              onclick="
+                document
+                  .getElementById('donate-card')
+                  .scrollIntoView({ behavior: 'smooth' })
+              "
+            >
+              <i class="fa-solid fa-heart"></i> Donate
+            </button>
+            <button class="hero-btn sos" onclick="toggleSOS(true)">
+              <i class="fa-solid fa-bell"></i> SOS EMERGENCY
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" id="search-card">
+            <div class="card-icon bg-blue">
+              <i class="fa-solid fa-location-crosshairs"></i>
+            </div>
+            <h3>Find Donor</h3>
+            <p>Locate compatible blood groups in your city instantly.</p>
+            <div class="form-group">
+              <div class="input-row">
+                <select id="searchGroup" style="width: 40%">
+                  <option value="" disabled selected>Group</option>
+                  <option value="A+">A+</option>
+                  <option value="B+">B+</option>
+                  <option value="O+">O+</option>
+                  <option value="AB+">AB+</option>
+                  <option value="A-">A-</option>
+                  <option value="B-">B-</option>
+                  <option value="O-">O-</option>
+                  <option value="AB-">AB-</option>
+                </select>
+                <input
+                  type="text"
+                  id="searchLocation"
+                  placeholder="City (e.g. Guntur)"
+                />
+              </div>
+            </div>
+            <button class="btn-action btn-primary" onclick="searchDonors()">
+              <span id="searchBtnText">Search Database</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-icon bg-red">
+              <i class="fa-solid fa-truck-medical"></i>
+            </div>
+            <h3>Request Blood</h3>
+            <p>Post a requirement to notify local donors.</p>
+            <input
+              type="text"
+              id="reqName"
+              placeholder="Patient Name"
+              style="margin-bottom: 10px"
+            />
+            <div class="input-row" style="margin-bottom: 12px">
+              <select id="reqUrgency">
+                <option value="Normal">Normal</option>
+                <option value="Critical">🚨 Critical</option>
+              </select>
+            </div>
+            <button
+              class="btn-action btn-outline"
+              onclick="showToast('Request posted to network!', 'success')"
+            >
+              Post Request
+            </button>
+          </div>
+
+          <div class="card" id="donate-card">
+            <div class="card-icon bg-green">
+              <i class="fa-solid fa-hand-holding-medical"></i>
+            </div>
+            <h3>Register Donor</h3>
+            <p>Join our hero list. Your data is secure.</p>
+            <input
+              type="text"
+              id="regName"
+              placeholder="Full Name"
+              style="margin-bottom: 10px"
+            />
+            <div class="input-row" style="margin-bottom: 10px">
+              <select id="regGroup">
+                <option value="">Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+              <input type="text" id="regLoc" placeholder="City" />
+            </div>
+            <input
+              type="tel"
+              id="regPhone"
+              placeholder="Mobile Number"
+              style="margin-bottom: 12px"
+            />
+            <button class="btn-action btn-gradient" onclick="registerDonor()">
+              <i class="fa-solid fa-plus"></i> Register
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="grid-3"
+          style="grid-template-columns: 2fr 1fr; margin-top: 30px"
+        >
+          <div class="card" style="min-height: 300px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #f1f5f9;
+                padding-bottom: 10px;
+              "
+            >
+              <h3>Search Results</h3>
+              <button
+                onclick="document.getElementById('bloodResults').innerHTML = ''"
+                style="
+                  border: none;
+                  background: none;
+                  color: #64748b;
+                  cursor: pointer;
+                "
+              >
+                Clear
+              </button>
+            </div>
+            <div id="bloodResults">
+              <div style="text-align: center; color: #cbd5e1; margin-top: 50px">
+                <i
+                  class="fa-solid fa-magnifying-glass"
+                  style="font-size: 2rem; margin-bottom: 10px; display: block"
+                ></i>
+                Waiting for search input...
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Nearby Banks</h3>
+            <div style="margin-top: 15px">
+              <div
+                class="result-item"
+                style="opacity: 1; transform: none; padding: 10px 0"
+              >
+                <div style="display: flex; gap: 10px; align-items: center">
+                  <i
+                    class="fa-solid fa-hospital"
+                    style="color: var(--bb-accent)"
+                  ></i>
+                  <div>
+                    <strong>City General</strong><br /><small>24/7 Open</small>
+                  </div>
+                </div>
+                <a href="tel:102" style="color: var(--bb-dark)"
+                  ><i class="fa-solid fa-phone"></i
+                ></a>
+              </div>
+              <div
+                class="result-item"
+                style="opacity: 1; transform: none; padding: 10px 0"
+              >
+                <div style="display: flex; gap: 10px; align-items: center">
+                  <i
+                    class="fa-solid fa-droplet"
+                    style="color: var(--bb-primary)"
+                  ></i>
+                  <div>
+                    <strong>Red Cross</strong><br /><small>9 AM - 8 PM</small>
+                  </div>
+                </div>
+                <a href="tel:102" style="color: var(--bb-dark)"
+                  ><i class="fa-solid fa-phone"></i
+                ></a>
+              </div>
+            </div>
+            <button
+              class="btn-action btn-outline"
+              style="margin-top: 20px"
+              onclick="openDashboard()"
+            >
+              <i class="fa-solid fa-chart-pie"></i> View Analytics
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const cards = document.querySelectorAll(".home-card");
+        cards.forEach((card) => {
+          card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty("--mouse-x", `${x}px`);
+            card.style.setProperty("--mouse-y", `${y}px`);
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -6;
+            const rotateY = ((x - centerX) / centerX) * 6;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+          });
+          card.addEventListener("mouseleave", () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            card.style.transition =
+              "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
+          });
+          card.addEventListener("mouseenter", () => {
+            card.style.transition = "transform 0.1s linear";
+          });
+        });
+      });
+    </script>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        deleteDoc,
+        doc,
+        query,
+        where,
+        setDoc,
+        getDoc,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+        deleteUser,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDszvS4ZH3059zuWXwNuFebycD5Ozak3Ls",
+        authDomain: "praggya-a5ae4.firebaseapp.com",
+        projectId: "praggya-a5ae4",
+        storageBucket: "praggya-a5ae4.firebasestorage.app",
+        messagingSenderId: "975806529880",
+        appId: "1:975806529880:web:eb0c0af8f00456f8e1e52d",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const bloodDb = getFirestore(app);
+      const auth = getAuth(app);
+
+      window.patients = [];
+      window.activeIndex = -1;
+
+      let currentUser = null;
+      let currentRole = "hospital";
+      let isLoginMode = true;
+
+      window.MEDICAL_DB = {
+        Metoprolol: {
+          type: "Beta Blocker",
+          desc: "Slows HR, lowers BP.",
+          impact: { hr: -20, bp: -15 },
+          duration: 60,
+          risk: "Bradycardia",
+        },
+        Amlodipine: {
+          type: "Ca-Channel Blocker",
+          desc: "Major BP reduction.",
+          impact: { bp: -25, hr: 5 },
+          duration: 80,
+          risk: "Hypotension",
+        },
+        Atropine: {
+          type: "Anticholinergic",
+          desc: "Increases HR massively.",
+          impact: { hr: 45, bp: 10 },
+          duration: 30,
+          risk: "Arrhythmia",
+        },
+        Epinephrine: {
+          type: "Vasopressor",
+          desc: "Spikes BP and HR.",
+          impact: { hr: 50, bp: 40, spo2: 2 },
+          duration: 15,
+          risk: "Cardiac Arrest",
+        },
+        Nitroglycerin: {
+          type: "Vasodilator",
+          desc: "Rapid BP drop.",
+          impact: { bp: -30, hr: 10 },
+          duration: 20,
+          risk: "Hypotension",
+        },
+        Albuterol: {
+          type: "Bronchodilator",
+          desc: "Opens airways.",
+          impact: { spo2: 8, hr: 15 },
+          duration: 45,
+          risk: "Tachycardia",
+        },
+        "Insulin R": {
+          type: "Hormone",
+          desc: "Lowers blood sugar.",
+          impact: { sugar: -60 },
+          duration: 90,
+          risk: "Hypoglycemia",
+        },
+        "Dextrose 50%": {
+          type: "Glucose",
+          desc: "Sugar spike.",
+          impact: { sugar: 80 },
+          duration: 30,
+          risk: "Hyperglycemia",
+        },
+        Morphine: {
+          type: "Opioid",
+          desc: "Pain relief.",
+          impact: { hr: -10, bp: -5, spo2: -5, health: 5 },
+          duration: 100,
+          risk: "Resp. Failure",
+        },
+        Furosemide: {
+          type: "Diuretic",
+          desc: "Removes fluid.",
+          impact: { bp: -15, weight: -0.5 },
+          duration: 50,
+          risk: "Dehydration",
+        },
+      };
+
+      window.SURGERY_DB = {
+        "CABG (Bypass)": { risk: 30, fix: ["Heart Attack"], trauma: 25 },
+        Angioplasty: { risk: 10, fix: ["Heart Attack", "Angina"], trauma: 10 },
+        "Pacemaker Install": {
+          risk: 5,
+          fix: ["Bradycardia", "Arrhythmia"],
+          trauma: 5,
+        },
+        Appendectomy: { risk: 15, fix: ["Infection"], trauma: 15 },
+        Thoracostomy: { risk: 20, fix: ["Pneumothorax"], trauma: 10 },
+      };
+
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          currentUser = user;
+
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const userData = userDoc.exists()
+            ? userDoc.data()
+            : { role: "person" };
+
+          applyRolePermissions(userData.role);
+
+          document.getElementById("auth-overlay").style.display = "none";
+          document.getElementById("systemStatus").innerHTML =
+            `<i class="fa-solid fa-user-check"></i> ${user.email}`;
+        } else {
+          currentUser = null;
+          document.getElementById("auth-overlay").style.display = "flex";
+        }
+      });
+
+      window.handleAuth = async function (e) {
+        e.preventDefault();
+        const email = document.getElementById("authEmail").value;
+        const pass = document.getElementById("authPass").value;
+        const errBox = document.getElementById("authError");
+        const btn = document.getElementById("authBtn");
+
+        errBox.style.display = "none";
+        btn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+        try {
+          if (isLoginMode) {
+            await signInWithEmailAndPassword(auth, email, pass);
+          } else {
+            const cred = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              pass,
+            );
+
+            await setDoc(doc(db, "users", cred.user.uid), {
+              email: email,
+              role: currentRole,
+              createdAt: Date.now(),
+            });
+          }
+        } catch (error) {
+          errBox.innerText = error.message.replace("Firebase: ", "");
+          errBox.style.display = "block";
+          btn.innerText = isLoginMode ? "LOGIN" : "REGISTER";
+        }
+      };
+
+      window.setRole = function (role) {
+        currentRole = role;
+        const btnH = document.getElementById("btn-role-hospital");
+        const btnP = document.getElementById("btn-role-person");
+        if (role === "hospital") {
+          btnH.style.background = "var(--primary)";
+          btnH.style.color = "white";
+          btnP.style.background = "transparent";
+          btnP.style.color = "var(--text-muted)";
+        } else {
+          btnP.style.background = "var(--primary)";
+          btnP.style.color = "white";
+          btnH.style.background = "transparent";
+          btnH.style.color = "var(--text-muted)";
+        }
+      };
+
+      window.toggleAuthMode = function () {
+        isLoginMode = !isLoginMode;
+        document.getElementById("authBtn").innerText = isLoginMode
+          ? "LOGIN"
+          : "REGISTER";
+        document.getElementById("authSwitchText").innerText = isLoginMode
+          ? "New here?"
+          : "Already have an account?";
+        document.getElementById("authActionText").innerText = isLoginMode
+          ? "Create Account"
+          : "Login";
+      };
+
+      window.logout = function () {
+        signOut(auth);
+        location.reload();
+      };
+      window.deleteAccount = async function () {
+        if (!currentUser) return;
+
+        const confirm1 = confirm(
+          "⚠️ DANGER ZONE\n\nDo you want to permanently delete your account?",
+        );
+        if (!confirm1) return;
+
+        const confirm2 = confirm(
+          "Are you really sure?\n\nThis cannot be undone. You will lose access immediately.",
+        );
+        if (!confirm2) return;
+
+        const btn = document.getElementById("deleteBtn");
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+        try {
+          const uid = currentUser.uid;
+
+          await deleteDoc(doc(db, "users", uid));
+
+          await deleteUser(currentUser);
+
+          alert("Account successfully deleted.");
+          location.reload();
+        } catch (e) {
+          console.error(e);
+
+          if (e.code === "auth/requires-recent-login") {
+            alert(
+              "Security Alert: For your protection, you must Log Out and Log In again before deleting your account.",
+            );
+          } else {
+            alert("Error deleting account: " + e.message);
+          }
+        } finally {
+          if (btn) btn.innerHTML = originalIcon;
+        }
+      };
+      window.togglePassVisibility = function () {
+        const passInput = document.getElementById("authPass");
+        const icon = document.getElementById("eyeIcon");
+
+        if (passInput.type === "password") {
+          passInput.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          passInput.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      };
+
+      function applyRolePermissions(role) {
+        const navBtns = document.querySelectorAll(".nav-btn");
+
+        if (role === "person") {
+          navBtns[0].style.display = "none";
+          navBtns[1].style.display = "none";
+
+          window.switchView("blood");
+
+          document.querySelector(".home-grid").innerHTML = `
+             <div class="home-card" onclick="switchView('blood')" style="border-color: var(--blood-red); grid-column: 1 / -1;">
+                <div class="home-icon" style="color: var(--blood-red)"><i class="fa-solid fa-droplet"></i></div>
+                <div class="home-title">Blood Donation</div>
+                <div class="home-desc">Find matching blood groups or register as a donor.</div>
+             </div>
+          `;
+          window.showToast(
+            "Logged in as Person. Hospital features hidden.",
+            "info",
+          );
+        } else {
+          navBtns[0].style.display = "inline-block";
+          navBtns[1].style.display = "inline-block";
+          window.switchView("home");
+          window.showToast("Hospital Access Granted.", "success");
+        }
+      }
+
+      window.switchView = function (viewName) {
+        document
+          .querySelectorAll(".view-section")
+          .forEach((el) => el.classList.remove("active-view"));
+        document
+          .getElementById(`view-${viewName}`)
+          .classList.add("active-view");
+
+        const navs = document.querySelectorAll(".nav-btn");
+        navs.forEach((n) => {
+          n.classList.remove("active-nav");
+          n.classList.remove("blood-nav-active");
+        });
+
+        if (viewName === "entry") navs[0].classList.add("active-nav");
+        if (viewName === "archive") {
+          navs[1].classList.add("active-nav");
+          loadArchives();
+        }
+        if (viewName === "blood") navs[2].classList.add("blood-nav-active");
+      };
+
+      class DigitalTwin {
+        constructor(name, bp, hr, spo2, sugar, disease) {
+          this.id = "P-" + Math.floor(Math.random() * 10000);
+          this.name = name;
+          this.base = { bp, hr, spo2, sugar };
+          this.vitals = { bp, hr, spo2, sugar, health: 100, weight: 75 };
+          this.disease = disease;
+          this.isAlive = true;
+          this.activeDrugs = [];
+          this.logs = [`System Init for ${name} (${disease})`];
+          this.graphHistory = new Array(100).fill(50);
+          this.risks = { cardiac: 0, neural: 0, immune: 100 };
+        }
+
+        update() {
+          if (!this.isAlive) return;
+
+          if (this.disease.includes("Heart")) {
+            this.vitals.health -= 0.05;
+            this.vitals.bp -= 0.05;
+          } else if (this.disease.includes("Asthma")) {
+            this.vitals.spo2 -= 0.05;
+          }
+
+          this.activeDrugs = this.activeDrugs.filter((drug) => {
+            drug.timeLeft--;
+            if (drug.impact.hr)
+              this.vitals.hr += drug.impact.hr / drug.duration;
+            if (drug.impact.bp)
+              this.vitals.bp += drug.impact.bp / drug.duration;
+            if (drug.impact.spo2)
+              this.vitals.spo2 += drug.impact.spo2 / drug.duration;
+            if (drug.impact.sugar)
+              this.vitals.sugar += drug.impact.sugar / drug.duration;
+            if (drug.impact.health)
+              this.vitals.health += drug.impact.health / drug.duration;
+            return drug.timeLeft > 0;
+          });
+
+          this.vitals.hr += (this.base.hr - this.vitals.hr) * 0.01;
+          this.vitals.bp += (this.base.bp - this.vitals.bp) * 0.01;
+
+          this.vitals.hr += (Math.random() - 0.5) * 2;
+          this.vitals.bp += (Math.random() - 0.5) * 1;
+
+          this.calculateRisk();
+          this.checkVitals();
+          this.graphHistory.push(this.vitals.hr + Math.random() * 5);
+          this.graphHistory.shift();
+        }
+
+        calculateRisk() {
+          let cRisk = 0;
+          if (this.vitals.hr > 120) cRisk += this.vitals.hr - 120;
+          if (this.vitals.bp > 160) cRisk += this.vitals.bp - 160;
+          if (this.vitals.bp < 80) cRisk += (80 - this.vitals.bp) * 2;
+          this.risks.cardiac = Math.min(100, Math.max(0, cRisk));
+
+          let nRisk = 0;
+          if (this.vitals.spo2 < 90) nRisk += (90 - this.vitals.spo2) * 5;
+          if (this.vitals.bp > 190) nRisk += (this.vitals.bp - 190) * 2;
+          this.risks.neural = Math.min(100, Math.max(0, nRisk));
+          this.risks.immune = Math.min(100, Math.max(0, this.vitals.health));
+        }
+
+        checkVitals() {
+          this.vitals.health = Math.min(100, this.vitals.health);
+          if (
+            this.vitals.hr > 250 ||
+            this.vitals.hr < 20 ||
+            this.vitals.bp < 40 ||
+            this.vitals.spo2 < 50 ||
+            this.vitals.health <= 0
+          ) {
+            this.isAlive = false;
+            this.vitals.hr = 0;
+            this.vitals.bp = 0;
+            this.addLog("CRITICAL FAILURE: PATIENT EXPIRED.");
+            document.getElementById("twinImg").style.filter =
+              "grayscale(100%) blur(5px)";
+          }
+        }
+
+        treat(type, name = "") {
+          if (!this.isAlive) return;
+          if (type === "meds") {
+            const drugData = window.MEDICAL_DB[name];
+            if (!drugData) return;
+            this.activeDrugs.push({
+              name,
+              timeLeft: drugData.duration,
+              duration: drugData.duration,
+              impact: drugData.impact,
+            });
+            this.addLog(`Administered ${name} (${drugData.type}).`);
+            if (name === "Epinephrine" && this.vitals.bp > 160) {
+              this.addLog("WARNING: HYPERTENSIVE CRISIS!");
+              this.vitals.health -= 30;
+            }
+          } else if (type === "surg") {
+            this.performSurgery(name);
+          } else if (type === "CPR") {
+            this.vitals.hr = 80;
+            this.vitals.bp = 90;
+            this.addLog("CPR performed.");
+          } else if (type === "OXYGEN") {
+            this.vitals.spo2 = 100;
+            this.activeDrugs.push({
+              name: "Pure O2",
+              timeLeft: 20,
+              duration: 20,
+              impact: { spo2: 2, health: 0.5 },
+            });
+            this.addLog("O2 Mask Applied.");
+          }
+        }
+
+        performSurgery(name) {
+          const surg = window.SURGERY_DB[name];
+          if (!surg) return;
+          this.addLog(`Starting ${name}...`);
+          const failureChance = surg.risk + (100 - this.vitals.health) / 2;
+          const roll = Math.random() * 100;
+          this.vitals.health -= surg.trauma;
+
+          if (roll > failureChance) {
+            setTimeout(() => {
+              if (!this.isAlive) return;
+              this.disease = "Post-Op Recovery";
+              this.vitals.health += 20;
+              this.addLog(`${name} SUCCESSFUL.`);
+            }, 3000);
+          } else {
+            setTimeout(() => {
+              if (!this.isAlive) return;
+              this.vitals.health -= 30;
+              this.vitals.bp -= 20;
+              this.addLog(`${name} FAILED! Massive hemorrhage.`);
+            }, 3000);
+          }
+        }
+
+        addLog(msg) {
+          const time = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+          this.logs.unshift(`[${time}] ${msg}`);
+        }
+      }
+
+      let simInterval = null;
+      let graphInterval = null;
+      let currentModalType = "";
+
+      window.startSimulation = function () {
+        const name = document.getElementById("pName").value || "Unknown";
+        const bp = parseFloat(document.getElementById("vBP").value);
+        const hr = parseFloat(document.getElementById("vHR").value);
+        const spo2 = parseFloat(document.getElementById("vSpO2").value);
+        const sug = parseFloat(document.getElementById("vSug").value);
+        const disease = document.getElementById("pCondition").value || "Stable";
+
+        const p = new DigitalTwin(name, bp, hr, spo2, sug, disease);
+        window.patients.push(p);
+        window.activeIndex = window.patients.length - 1;
+
+        updatePatientSwitcher();
+
+        if (!simInterval) simInterval = setInterval(gameLoop, 1000);
+        if (!graphInterval) graphInterval = setInterval(drawGraph, 50);
+
+        document.getElementById("scanLine").style.display = "block";
+        document.getElementById("twinImg").classList.add("holo-active");
+        document.getElementById("statusBadge").innerText = "ONLINE";
+        document.getElementById("statusBadge").style.background = "#16a34a";
+        document.getElementById("statusBadge").style.color = "white";
+
+        updateDoctorRecs(disease);
+      };
+
+      window.switchPatient = function () {
+        const val = document.getElementById("patientSwitcher").value;
+        window.activeIndex = parseInt(val);
+        if (window.activeIndex !== -1) {
+          const p = window.patients[window.activeIndex];
+          updateDoctorRecs(p.disease);
+          document.getElementById("pName").value = p.name;
+          updateUI(p);
+        }
+      };
+
+      function updatePatientSwitcher() {
+        const sel = document.getElementById("patientSwitcher");
+        sel.innerHTML = "";
+        window.patients.forEach((p, i) => {
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.innerText = `${p.id} - ${p.name}`;
+          if (i === window.activeIndex) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        if (window.patients.length === 0)
+          sel.innerHTML = "<option value='-1'>No Active Patients</option>";
+      }
+
+      function gameLoop() {
+        window.patients.forEach((p) => p.update());
+        if (window.activeIndex !== -1)
+          updateUI(window.patients[window.activeIndex]);
+      }
+
+      function updateUI(twin) {
+        document.getElementById("dispBP").innerText = Math.floor(
+          twin.vitals.bp,
+        );
+        document.getElementById("dispHR").innerText = Math.floor(
+          twin.vitals.hr,
+        );
+        document.getElementById("dispHlth").innerText =
+          Math.floor(twin.vitals.health) + "%";
+        document.getElementById("vBP").value = Math.floor(twin.vitals.bp);
+        document.getElementById("vHR").value = Math.floor(twin.vitals.hr);
+
+        document.getElementById("patientIDCard").style.display = "block";
+        document.getElementById("cardID").innerText = twin.id;
+        document.getElementById("cardName").innerText = twin.name;
+        document.getElementById("diseaseDisplay").innerText =
+          twin.disease.toUpperCase();
+        document.getElementById("diseaseDisplay").style.display = "block";
+
+        document.getElementById("riskChartArea").style.display = "grid";
+        document.getElementById("barCard").style.width =
+          twin.risks.cardiac + "%";
+        document.getElementById("barNeur").style.width =
+          twin.risks.neural + "%";
+        document.getElementById("barImm").style.width = twin.risks.immune + "%";
+
+        const logBox = document.getElementById("simLog");
+        if (logBox.innerHTML !== twin.logs.join("")) {
+          logBox.innerHTML = "";
+          twin.logs.forEach(
+            (l) => (logBox.innerHTML += `<div class="log-item">${l}</div>`),
+          );
+        }
+
+        const panel = document.getElementById("twinPanel");
+        if (twin.vitals.health < 40) panel.classList.add("emergency-mode");
+        else panel.classList.remove("emergency-mode");
+      }
+
+      function updateDoctorRecs(disease) {
+        const txt = document.getElementById("docText");
+        document.getElementById("docPanel").style.display = "block";
+        let rec = "Monitor vitals closely. Standard care protocol.";
+        if (disease.includes("Heart"))
+          rec =
+            "CRITICAL: Administer Beta Blockers & Aspirin immediately. Prep Cath Lab.";
+        else if (disease.includes("Diabetes"))
+          rec =
+            "Check Glucose. Administer Insulin if > 180. Low carb diet advised.";
+        else if (disease.includes("Asthma"))
+          rec =
+            "Start O2 Therapy @ 2L/min. Administer Albuterol via Nebulizer.";
+        txt.innerText = rec;
+      }
+
+      window.applyTreatment = function (type, name) {
+        if (window.activeIndex === -1) return alert("Start Simulation First");
+        if (type === "ADRENALINE")
+          window.patients[window.activeIndex].treat("meds", "Epinephrine");
+        else if (type === "INSULIN")
+          window.patients[window.activeIndex].treat("meds", "Insulin R");
+        else window.patients[window.activeIndex].treat(type, name);
+        updateUI(window.patients[window.activeIndex]);
+      };
+
+      function drawGraph() {
+        if (window.activeIndex === -1) return;
+        const twin = window.patients[window.activeIndex];
+        const canvas = document.getElementById("heartGraph");
+        if (canvas.width !== canvas.clientWidth)
+          canvas.width = canvas.clientWidth;
+
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.beginPath();
+        ctx.strokeStyle = twin.isAlive ? "#ef4444" : "#64748b";
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 100; i++) {
+          let val = !twin.isAlive ? 0 : (twin.graphHistory[i] / 200) * h;
+          const y = h - val - 10;
+          if (i == 0) ctx.moveTo(i * (w / 100), y);
+          else ctx.lineTo(i * (w / 100), y);
+        }
+        ctx.stroke();
+      }
+
+      window.archiveCurrentCase = async function () {
+        if (window.activeIndex === -1) return alert("No active case.");
+        if (!currentUser) return alert("Please login.");
+
+        const twin = window.patients[window.activeIndex];
+        const record = {
+          date: new Date().toLocaleDateString(),
+          name: twin.name,
+          condition: twin.disease,
+          outcome: twin.isAlive ? "Stabilized" : "Deceased",
+          timestamp: Date.now(),
+          ownerId: currentUser.uid,
+        };
+
+        try {
+          await addDoc(collection(db, "patients"), record);
+          alert("Case archived to Hospital Database.");
+          twin.addLog("SAVED TO CLOUD.");
+        } catch (e) {
+          alert("Error saving: " + e.message);
+        }
+      };
+
+      window.loadArchives = async function () {
+        if (!currentUser) return;
+
+        const tbody = document.querySelector("#recordTable tbody");
+        tbody.innerHTML =
+          "<tr><td colspan='6' style='text-align:center;'>Loading Hospital Records...</td></tr>";
+
+        try {
+          const q = query(
+            collection(db, "patients"),
+            where("ownerId", "==", currentUser.uid),
+          );
+          const querySnapshot = await getDocs(q);
+          const records = [];
+          querySnapshot.forEach((doc) =>
+            records.push({ id: doc.id, ...doc.data() }),
+          );
+
+          if (records.length === 0) {
+            tbody.innerHTML =
+              "<tr><td colspan='6' style='text-align:center;'>No records found for your hospital.</td></tr>";
+            return;
+          }
+
+          const diseaseCounts = {};
+          let survived = 0;
+          records.forEach((row) => {
+            diseaseCounts[row.condition] =
+              (diseaseCounts[row.condition] || 0) + 1;
+            if (row.outcome === "Stabilized") survived++;
+          });
+          const sorted = Object.entries(diseaseCounts).sort(
+            (a, b) => b[1] - a[1],
+          );
+          const common = sorted.length > 0 ? sorted[0][0] : "None";
+
+          document.getElementById("statTotal").innerText = records.length;
+          document.getElementById("statCommon").innerText = common;
+          document.getElementById("statStable").innerText =
+            Math.round((survived / records.length) * 100) + "%";
+          console.log("Disease Counts:", sorted);
+          document.getElementById("statRare").innerText = sorted.filter(
+            (x) => x[1] <= 2,
+          ).length;
+
+          tbody.innerHTML = "";
+          records.forEach((row) => {
+            let tagType =
+              diseaseCounts[row.condition] > 2 ? "tag-common" : "tag-rare";
+            let tagText = diseaseCounts[row.condition] > 2 ? "COMMON" : "RARE";
+            tbody.innerHTML += `
+              <tr>
+                  <td>${row.date}</td>
+                  <td><b>${row.name}</b></td>
+                  <td>${row.condition}</td>
+                  <td><span class="tag ${tagType}">${tagText}</span></td>
+                  <td>${row.outcome}</td>
+                  <td>
+                      <button onclick="deleteRecord('${row.id}')" style="color:var(--danger); background:none; border:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                  </td>
+              </tr>`;
+          });
+        } catch (e) {
+          console.error(e);
+          tbody.innerHTML =
+            "<tr><td colspan='6' style='text-align:center; color:red;'>Error Loading Data.</td></tr>";
+        }
+      };
+
+      window.deleteRecord = async function (id) {
+        if (!confirm("Delete this record permanently?")) return;
+        try {
+          await deleteDoc(doc(db, "patients", id));
+          alert("Deleted.");
+          loadArchives();
+        } catch (e) {
+          alert("Error: " + e.message);
+        }
+      };
+
+      window.searchTable = function () {
+        const q = document.getElementById("searchBox").value.toLowerCase();
+        document.querySelectorAll("#recordTable tbody tr").forEach((row) => {
+          row.style.display = row.innerText.toLowerCase().includes(q)
+            ? ""
+            : "none";
+        });
+      };
+
+      window.showToast = function (msg, type = "info") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        const icon =
+          type === "success"
+            ? "fa-circle-check"
+            : type === "error"
+              ? "fa-circle-exclamation"
+              : "fa-circle-info";
+        toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add("show"), 100);
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => toast.remove(), 500);
+        }, 3000);
+      };
+
+      window.toggleSOS = (show) => {
+        const el = document.getElementById("sosOverlay");
+        if (show) el.classList.add("active");
+        else el.classList.remove("active");
+      };
+
+      window.broadcastLoc = () => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+              window.open(
+                `https://wa.me/?text=${encodeURIComponent(`🚨 SOS! Blood Needed Immediately at: ${mapLink}`)}`,
+                "_blank",
+              );
+              showToast("WhatsApp opened!", "success");
+            },
+            () => showToast("Location permission denied", "error"),
+          );
+        } else {
+          showToast("Geolocation not supported", "error");
+        }
+      };
+
+      let bloodData = {
+        labels: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+        data: [12, 4, 20, 2, 35, 8, 7, 3],
+      };
+      let cChart, bChart, tChart;
+
+      window.openDashboard = function () {
+        document.getElementById("dashboardOverlay").classList.add("active");
+        setTimeout(initCharts, 100);
+      };
+
+      window.closeDashboard = function () {
+        document.getElementById("dashboardOverlay").classList.remove("active");
+      };
+
+      function initCharts() {
+        if (cChart) return;
+        updateTotalText();
+
+        const ctxC = document.getElementById("circleChart").getContext("2d");
+        cChart = new Chart(ctxC, {
+          type: "doughnut",
+          data: {
+            labels: bloodData.labels,
+            datasets: [
+              {
+                data: bloodData.data,
+                backgroundColor: [
+                  "#ef4444",
+                  "#f87171",
+                  "#3b82f6",
+                  "#60a5fa",
+                  "#f59e0b",
+                  "#fbbf24",
+                  "#10b981",
+                  "#34d399",
+                ],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            cutout: "75%",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+          },
+        });
+
+        const ctxB = document.getElementById("barChart").getContext("2d");
+        bChart = new Chart(ctxB, {
+          type: "bar",
+          data: {
+            labels: bloodData.labels,
+            datasets: [
+              {
+                label: "Units",
+                data: bloodData.data,
+                backgroundColor: (c) => (c.raw < 5 ? "#ef4444" : "#0f172a"),
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true },
+              x: { grid: { display: false } },
+            },
+            plugins: { legend: { display: false } },
+          },
+        });
+
+        const ctxT = document.getElementById("trendChart").getContext("2d");
+        let gradient = ctxT.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, "rgba(16, 185, 129, 0.5)");
+        gradient.addColorStop(1, "rgba(16, 185, 129, 0.0)");
+
+        tChart = new Chart(ctxT, {
+          type: "line",
+          data: {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [
+              {
+                label: "Donations",
+                data: [65, 59, 80, 81, 56, 95],
+                borderColor: "#10b981",
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { display: false }, x: { grid: { display: false } } },
+            plugins: { legend: { display: false } },
+          },
+        });
+      }
+
+      function updateTotalText() {
+        const total = bloodData.data.reduce((a, b) => a + b, 0);
+        const counter = document.getElementById("totalUnits");
+        let start = parseInt(counter.innerText) || 0;
+        const step = Math.ceil(Math.abs(total - start) / 30);
+        function animate() {
+          if (start === total) return;
+          start =
+            start < total
+              ? Math.min(start + step, total)
+              : Math.max(start - step, total);
+          counter.innerText = start;
+          requestAnimationFrame(animate);
+        }
+        animate();
+      }
+
+      window.addStock = function () {
+        const group = document.getElementById("updateGroup").value;
+        const amt = parseInt(document.getElementById("updateAmount").value);
+        if (!amt) return showToast("Enter amount", "error");
+        const idx = bloodData.labels.indexOf(group);
+        if (idx !== -1) {
+          if (bloodData.data[idx] + amt < 0)
+            return showToast("Stock can't be negative", "error");
+          bloodData.data[idx] += amt;
+          cChart.update();
+          bChart.update();
+          updateTotalText();
+          showToast(`Updated ${group}`, "success");
+        }
+      };
+
+      window.registerDonor = async function () {
+        const name = document.getElementById("regName").value;
+        const group = document.getElementById("regGroup").value;
+        const loc = document.getElementById("regLoc").value.toLowerCase();
+        const phone = document.getElementById("regPhone").value;
+        if (!name || !group || !loc || !phone)
+          return showToast("Fill all fields", "error");
+
+        const btn = document.querySelector("#donate-card .btn-gradient");
+        const originalText = btn.innerHTML;
+        btn.innerHTML =
+          '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...';
+
+        try {
+          await addDoc(collection(bloodDb, "donors"), {
+            name,
+            group,
+            location: loc,
+            phone,
+            timestamp: Date.now(),
+          });
+          showToast("Donor Registered!", "success");
+          document.getElementById("regName").value = "";
+          document.getElementById("regPhone").value = "";
+          document.getElementById("regLoc").value = "";
+        } catch (e) {
+          showToast("Error: " + e.message, "error");
+        } finally {
+          btn.innerHTML = originalText;
+        }
+      };
+
+      window.searchDonors = async function () {
+        const group = document.getElementById("searchGroup").value;
+        const loc = document
+          .getElementById("searchLocation")
+          .value.toLowerCase();
+        const area = document.getElementById("bloodResults");
+        const searchBtn = document.getElementById("searchBtnText");
+
+        if (!group || !loc) return showToast("Select Group & City", "error");
+        searchBtn.innerHTML =
+          '<i class="fa-solid fa-circle-notch fa-spin"></i> Searching...';
+
+        try {
+          const q = query(
+            collection(bloodDb, "donors"),
+            where("group", "==", group),
+          );
+          const querySnapshot = await getDocs(q);
+          area.innerHTML = "";
+          let count = 0;
+
+          querySnapshot.forEach((doc) => {
+            const d = doc.data();
+            if (d.location.includes(loc)) {
+              count++;
+              area.innerHTML += `
+                  <div class="result-item" style="animation-delay: ${count * 0.1}s">
+                      <div>
+                          <h4 style="margin:0; font-size:1.1rem;">${d.name}</h4>
+                          <span class="tag group">${d.group}</span>
+                          <small style="color:#64748b; margin-left:8px;"><i class="fa-solid fa-location-dot"></i> ${d.location.toUpperCase()}</small>
+                      </div>
+                      <div style="display:flex; gap:10px;">
+                          <a href="tel:${d.phone}" class="card-icon" style="width:35px; height:35px; background:#0f172a; color:white; font-size:1rem; margin:0;"><i class="fa-solid fa-phone"></i></a>
+                          <a href="https://wa.me/${d.phone}" target="_blank" class="card-icon" style="width:35px; height:35px; background:#25D366; color:white; font-size:1rem; margin:0;"><i class="fa-brands fa-whatsapp"></i></a>
+                      </div>
+                  </div>`;
+            }
+          });
+
+          if (count === 0) {
+            area.innerHTML = `<div style="text-align:center; padding:20px; color:#ef4444;"><i class="fa-regular fa-face-frown"></i> No donors in ${loc}</div>`;
+            showToast("No matches found", "error");
+          } else {
+            showToast(`Found ${count} donors!`, "success");
+          }
+        } catch (e) {
+          showToast("Network Error: " + e.message, "error");
+        } finally {
+          searchBtn.innerHTML = "Search Database";
+        }
+      };
+
+      window.openDataModal = function (type) {
+        if (window.activeIndex === -1) return alert("Start Simulation First!");
+        currentModalType = type;
+        document.getElementById("dataModal").style.display = "flex";
+        document.getElementById("modalTitle").innerText =
+          type === "meds" ? "PHARMACY DB" : "SURGICAL SUITE";
+        const list = document.getElementById("modalList");
+        list.innerHTML = "";
+        const sourceDB =
+          type === "meds" ? window.MEDICAL_DB : window.SURGERY_DB;
+        Object.keys(sourceDB).forEach((key) => {
+          const item = sourceDB[key];
+          let details =
+            type === "meds"
+              ? `<span style='font-size:0.75rem; color:#64748b; display:block;'>${item.type} | Risk: ${item.risk}</span><span style='font-size:0.7rem; color:#94a3b8;'>${item.desc}</span>`
+              : `<span style='font-size:0.75rem; color:#ef4444; display:block;'>Risk: ${item.risk}%</span>`;
+          list.innerHTML += `
+              <div class="data-item" onclick="window.patients[window.activeIndex].treat('${type}','${key}'); closeDataModal()">
+                  <div style="width:100%">
+                      <div style="display:flex; justify-content:space-between;"><b>${key}</b></div>
+                      ${details}
+                  </div>
+              </div>`;
+        });
+      };
+
+      window.closeDataModal = () =>
+        (document.getElementById("dataModal").style.display = "none");
+      window.filterData = () => {
+        const q = document.getElementById("modalSearch").value.toLowerCase();
+        document
+          .querySelectorAll(".data-item")
+          .forEach(
+            (el) =>
+              (el.style.display = el.innerText.toLowerCase().includes(q)
+                ? ""
+                : "none"),
+          );
+      };
+
+      window.toggleTheme = () => document.body.classList.toggle("dark-mode");
+      setInterval(
+        () =>
+          (document.getElementById("clock").innerText =
+            new Date().toLocaleTimeString()),
+        1000,
+      );
+
+      let stream;
+      window.startCamera = async function () {
+        document.getElementById("cameraModal").style.display = "flex";
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          document.getElementById("webcam").srcObject = stream;
+        } catch (e) {
+          alert("Cam Error");
+          closeCamera();
+        }
+      };
+
+      window.closeCamera = function () {
+        document.getElementById("cameraModal").style.display = "none";
+        if (stream) stream.getTracks().forEach((t) => t.stop());
+      };
+
+      window.capturePhoto = function () {
+        const v = document.getElementById("webcam");
+        const c = document.getElementById("camCanvas");
+        c.width = v.videoWidth;
+        c.height = v.videoHeight;
+        c.getContext("2d").drawImage(v, 0, 0);
+        document.getElementById("twinImg").src = c.toDataURL("image/png");
+        closeCamera();
+      };
+    </script>
+  </body>
+</html>
